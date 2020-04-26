@@ -11,7 +11,7 @@ public class Client {
     //В - черный
     //W - белый
     private JFrame frame = new JFrame("Gomoky");
-    private JLabel messageLabel = new JLabel("");
+    private JLabel notification = new JLabel("");
 
     private Color myColor;
     private Color opponentColor;
@@ -45,8 +45,8 @@ public class Client {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-        messageLabel.setBackground(Color.white);
-        frame.getContentPane().add(messageLabel, "North");
+        notification.setBackground(Color.white);
+        frame.getContentPane().add(notification, "North");
         JPanel boardPanel = new JPanel();
         boardPanel.setBackground(Color.black);
         boardPanel.setLayout(new GridLayout(15, 15, 1, 1));
@@ -69,8 +69,8 @@ public class Client {
         String response;
         try {
             response = in.readLine();
-            if (response.startsWith("WELCOME")) {
-                char mark = response.charAt(8);
+            if (response.startsWith("BEGIN")) {
+                char mark = response.charAt(5);
                 if(mark=='W') {
                     myColor = Color.white;
                     opponentColor = Color.black;
@@ -83,7 +83,7 @@ public class Client {
             while (true) {
                 response = in.readLine();
                 if (response.startsWith("VALID_MOVE")) {
-                    messageLabel.setText("The opponent makes a move, please wait");
+                    notification.setText("The opponent makes a move, please wait");
                     currentSquare.setBackground(myColor);
                     currentSquare.repaint();
                 } else if (response.startsWith("OPPONENT_MOVED")) {
@@ -96,7 +96,7 @@ public class Client {
 
                     board[locationX][locationY].setBackground(opponentColor);
                     board[locationX][locationY].repaint();
-                    messageLabel.setText("The opponent has made a move, your turn");
+                    notification.setText("The opponent has made a move, your turn");
                 } else if (response.startsWith("VICTORY")) {
                     JOptionPane.showMessageDialog(null, "Player "+response.substring(7)+" won");
                     System.exit(0);
@@ -110,7 +110,7 @@ public class Client {
                     System.exit(0);
                     break;
                 } else if (response.startsWith("MESSAGE")) {
-                    messageLabel.setText(response.substring(8));
+                    notification.setText(response.substring(8));
                 }
                 else if (response.startsWith("ERROR")) {
                     JOptionPane.showMessageDialog(null, response.substring(6));
